@@ -55,6 +55,20 @@ A modern SaaS application built with Next.js and OpenAI for generating engaging 
 - Smooth animations and micro-interactions
 - Clean, uncluttered interface
 
+## Screenshots
+
+### Post Generator Dashboard
+![Dashboard](./public/screenshots/dashboard.png)
+*Main dashboard where you can generate LinkedIn posts with AI assistance*
+
+### Post History
+![History](./public/screenshots/history.png)
+*Browse, search, and manage all your generated posts in one place*
+
+### Content Calendar
+![Calendar](./public/screenshots/calendar.png)
+*Plan your content strategy with AI-generated ideas and scheduling*
+
 ## Getting Started
 
 ### Prerequisites
