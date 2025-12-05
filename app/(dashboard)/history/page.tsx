@@ -5,7 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase, type Post } from '@/lib/supabase';
-import { Copy, Trash2, Star, FileText, AlignLeft, Image, CheckCircle2, Loader2 } from 'lucide-react';
+import { sharePostToLinkedIn } from '@/lib/auth';
+import { Copy, Trash2, Star, FileText, AlignLeft, Image, CheckCircle2, Loader2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -35,6 +36,7 @@ export default function HistoryPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPosts();
@@ -62,6 +64,18 @@ export default function HistoryPage() {
     setCopiedId(id);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleShare = async (content: string, id: string) => {
+    setSharingId(id);
+    try {
+      await sharePostToLinkedIn(content);
+      toast.success('Post shared to LinkedIn successfully!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to share post to LinkedIn');
+    } finally {
+      setSharingId(null);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -184,6 +198,18 @@ export default function HistoryPage() {
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         ) : (
                           <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleShare(post.content, post.id)}
+                        disabled={sharingId === post.id}
+                      >
+                        {sharingId === post.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                        ) : (
+                          <Share2 className="h-4 w-4 text-blue-600" />
                         )}
                       </Button>
                       <AlertDialog>

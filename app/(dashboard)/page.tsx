@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateLinkedInPost } from '@/lib/openai';
+import { sharePostToLinkedIn } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { Sparkles, Copy, Save, CheckCircle2, Loader2 } from 'lucide-react';
+import { Sparkles, Copy, Save, CheckCircle2, Loader2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 type PostType = 'long' | 'short' | 'carousel';
@@ -18,6 +19,7 @@ export default function GeneratorPage() {
   const [generatedContent, setGeneratedContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleGenerate = async () => {
@@ -43,6 +45,20 @@ export default function GeneratorPage() {
     setCopied(true);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (!generatedContent) return;
+
+    setIsSharing(true);
+    try {
+      await sharePostToLinkedIn(generatedContent);
+      toast.success('Post shared to LinkedIn successfully!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to share post to LinkedIn');
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   const handleSave = async () => {
@@ -161,6 +177,25 @@ export default function GeneratorPage() {
                         <>
                           <Copy className="mr-2 h-4 w-4" />
                           Copy
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleShare}
+                      disabled={isSharing}
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                    >
+                      {isSharing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Sharing...
+                        </>
+                      ) : (
+                        <>
+                          <Share2 className="mr-2 h-4 w-4" />
+                          Share to LinkedIn
                         </>
                       )}
                     </Button>
