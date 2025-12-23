@@ -1,10 +1,8 @@
 import { supabase } from './supabase';
 
 export async function signInWithLinkedIn() {
-  // Use localhost for development, actual domain for production
-  const redirectUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/auth/callback`
-    : 'https://postgen-mag.vercel.app/auth/callback';
+  // Use the Vercel callback URL for the LinkedIn OAuth flow
+  const redirectUrl = 'https://postgen-mag.vercel.app/auth/callback';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'linkedin_oidc',
