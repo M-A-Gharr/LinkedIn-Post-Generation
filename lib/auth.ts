@@ -4,7 +4,7 @@ export async function signInWithLinkedIn() {
   // Use localhost for development, actual domain for production
   const redirectUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/auth/callback`
-    : 'http://localhost:3000/auth/callback';
+    : 'https://postgen-mag.vercel.app/auth/callback';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'linkedin_oidc',
