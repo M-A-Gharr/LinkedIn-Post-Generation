@@ -6,7 +6,7 @@ export async function signInWithLinkedIn() {
 
   // Ensure we do not use the implicit flow. Request PKCE/authorization code flow so the
   // authorization code is delivered to Supabase's callback endpoint (server-side exchange).
-  // Supabase by default uses PKCE; we explicitly avoid any `flowType: 'implicit'` parameter.
+  // Supabase by default uses PKCE; explicitly avoid any `flowType: 'implicit'` parameter.
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'linkedin_oidc',
     options: {
