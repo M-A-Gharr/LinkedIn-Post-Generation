@@ -1,31 +1,22 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server'
+// Import the utility we just created
+import { createClient } from '../../utils/supabase/server'
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code');
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // if "next" is in params, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/dashboard'
 
-  if (!code) {
-    return NextResponse.redirect(new URL('/auth/error', request.url));
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: { persistSession: false },
-  });
-
-  try {
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      console.error('Auth callback error:', error);
-      return NextResponse.redirect(new URL('/auth/error', request.url));
+  if (code) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (!error) {
+      return NextResponse.redirect(`${origin}${next}`)
     }
-
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  } catch (err) {
-    console.error('Unexpected callback error:', err);
-    return NextResponse.redirect(new URL('/auth/error', request.url));
   }
-}
 
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`${origin}/auth/error`)
+}
